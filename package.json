@@ -1,0 +1,16 @@
+{
+  "name": "slaevaluator",
+  "version": "1.0.0",
+  "description": "SLA calculator",
+  "main": "index.js",
+  "scripts": {
+    "run": "npx ts-node awsmodels.ts",
+    "build": "echo \"No build needed\" && exit 0",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "dmd",
+  "license": "ISC",
+  "devDependencies": {
+    "jshint": "^2.13.6"
+  }
+}
