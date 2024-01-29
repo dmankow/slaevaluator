@@ -3,6 +3,7 @@ import {
     chaining, 
     parallel,
     parallelism,
+    parallelismWithAllocation,
     showAvailability,
     showComparison,
     showBestEverComparison,
@@ -251,7 +252,23 @@ showAvailability('LB, 2xEC2, SQS, 2x EC2, DynamoDB, 2 AZ, 2 Regions',
     )
 );
 
+showComparison();
 
+headline('Parallelism with allocation');
+
+// Create array [1,2, ...,9]
+const allocations = new Array(9).fill(1).map( (_, i) => i+1 );
+allocations.forEach((allocation) => {
+    showAvailability(`ELB, ASG, EC2 with allocation ${allocation}/10, RDS`,
+        chain('Route53', 'ELB.MultiAZ', 
+            parallelismWithAllocation(10, allocation, chain(
+                'EC2',
+                'EBS'
+            )),
+            'RDS.MultiAZ'
+        )
+    );
+});
 showComparison();
 
 headline('Comparison between all models');

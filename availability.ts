@@ -250,14 +250,46 @@ export function parallel(...availabilitiesOrServices: AvailabilityOrServiceType[
  * @returns 
  */
 export function parallelism(parallelism: number, availabilityOrService: AvailabilityOrServiceType) {
+    if (parallelism < 0) {
+        throw new Error('Assertion: Paralellism can not be negative.')
+    }
+    if (parallelism === 0) {
+        return 1;
+    }
     const availability = getAvailability(availabilityOrService);
     if (DEBUG) console.log({availability: availability, device: availabilityOrService });
-    const unavailability = Math.pow((1-availability), Math.round(parallelism));
+    const unavailability = Math.pow((1-availability), parallelism);
     if (DEBUG) console.log({ availability: 1-unavailability, parallelism });
     if ((unavailability < 0) || (unavailability > 1)) {
         throw new Error(`Assertion: Invalid number range for availability`);
     }
+    if (parallelism < 0) {
+        throw new Error('Assertion: Parallelism can not be negative.')
+    }
+    if (parallelism === 0) {
+        return 1;
+    }
     return 1-unavailability;
+}
+
+export function parallelismWithAllocation(maxParallelism: number, allocation: number, availability:AvailabilityOrServiceType) {
+    if (allocation > maxParallelism) {
+        console.warn('Warning: A resource allocation greater than the number of available systems is been defined.')
+        return 0;
+    }
+    if (allocation < 0) {
+        throw new Error(`Assertion: Allocation can not be negative.`);
+    }
+    if (maxParallelism < 0) {
+        throw new Error('Assertion: Paralellism can not be negative.');
+    }
+    if (maxParallelism === 0) {
+        return 1;
+    }
+    if (allocation <= 1) {
+        return parallelism(maxParallelism, availability);
+    }
+    return parallelism(maxParallelism / allocation, chaining(allocation, availability));
 }
 
 /*****************************************************************************
@@ -392,7 +424,8 @@ function printComparisonItems(models:TModelStackItem[], min: number, max: number
             .replace(/multi.{0,1}region/ig,'M-Rg')
             .replace(/single.{0,1}region/ig,'S-Rg')
             .replace(/cross.{0,1}region/ig,'crsRg')
-            .replace(/traffic/ig,'trf.')
+            .replace(/traffic/ig,'trf')
+            .replace(/allocation/ig,'aloc')
             .replace(/api.{0,1}(gw|gateway)/ig,'API')
             .replace(/gateway/ig,'GW')
             .replace(/endpoint[s|]/ig,'ep.')
@@ -500,24 +533,19 @@ export function showBestEverComparison():TModelStackItem|undefined {
         max = bestEverModelStack[0].availability;
         min = bestEverModelStack[bestEverModelStack.length-1].availability;
         bestModel = bestEverModelStack[0];
-        bestEverModelStack.slice(0, Math.min(5, bestEverModelStack.length));
         console.log('\nTop-5 of all models:\n');
-        printComparisonItems(bestEverModelStack, min, max);
+        printComparisonItems(
+            bestEverModelStack.slice(0, Math.min(5, bestEverModelStack.length)),
+            min, max);
     }
 
     if (bestOfModelStack.length > 0) { 
-        /*
-        bestOfModelStack.sort((a, b) => {
-            return b.availability - a.availability;
-        });
-        */
         min = 1;
         max = 0;
         bestOfModelStack.forEach((model) => {
             if (model.availability < min) min = model.availability;
             if (model.availability > max) max = model.availability;
         });
-        bestOfModelStack.slice(0, Math.min(5, bestOfModelStack.length));
         console.log('\nBest model of every serie of models:\n');
         printComparisonItems(bestOfModelStack, min, max);
     }

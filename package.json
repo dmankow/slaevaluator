@@ -4,7 +4,8 @@
   "description": "SLA calculator",
   "main": "index.js",
   "scripts": {
-    "run": "npx ts-node awsmodels.ts",
+    "demo": "npx ts-node awsmodels.ts",
+    "model": "npx ts-node models.ts",
     "build": "echo \"No build needed\" && exit 0",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
