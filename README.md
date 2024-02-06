@@ -1,62 +1,73 @@
 # SLA Evaluator
 
-This project calculates availabilities and outages of compound IT services.
-Compound services may consist out of a combination of
+This project helps to find the perfect combination of IT services of
+cloud providers, here AWS. This project calculates availabilities and
+outages of compound IT services. It allows you to compare the availability
+between multiple service models.
+
+Compound services consists out of a combination of
 
 - serial (dependent) systems, and
 - parallel (independent) systems.
 
-Default availabilities for most AWS services has been collected out of the [AWS SLA
-collection](https://aws.amazon.com/legal/service-level-agreements) for convenience.
+Default availabilities for most AWS services has been collected out of the
+[AWS SLA collection](https://aws.amazon.com/legal/service-level-agreements) for convenience.
 Other sets of default system availabilities can easily be added.
 
-## The concept of Availability
+## The Concept of Availability
 
-The term [Availability](https://en.wikipedia.org/wiki/Availability) is been used in reliability engineering.
-It describles the propability of a system to be in the operable state at any random point in time.
+The term [availability](https://en.wikipedia.org/wiki/Availability) is been used in reliability engineering.
+It describes the probability of a system to be in the operable state at any random point in time.
 Availability can be stated in percent or as a factor in the range [0,1].
 High availability systems might be specified as 99.9%, 99.999% or 99.9995%.
 
-In the following we use percent when we display an availability, but factors in the
-range of [0,1] when we calculate with them.
+In the following we use percent when we display an availability. We use factors
+in the range of [0,1] when we calculate with them.
 
-Any additionally stated time span is without effect. Both systems have identical availabilities: 99.5%/month and 99.5%/year.
+Any additionally stated time span is without effect. Both systems have identical
+availabilities: 99.5%/month and 99.5%/year.
 
 ## How we can use it
 
-For a comparision of availabilities it is sometimes more practical to compare the
-resulting outage time span. We use "outage" instead of "downtime", because there is
-in most circumstances no relation to any realistic downtime of a system.
+For a comparison of availabilities it is sometimes more practical to compare the
+resulting outage time span. We use "outage" instead of "downtime", because there
+is in most circumstances no relation to any realistic downtime of a system.
 
-This is, because Availabilities stated in any SLA are usually compromised by some
-considerations of business risks of the service provider, as well as marketing.
-A reputable service provider will state any Availabilities including a safety
-coefficient dependant on the number of users (volume), impact and more.
+This is, because availabilities stated inside a SLA are usually compromised by
+some considerations of business risks as well as marketing.
+A reputable service provider will state any availabilities including a safety
+coefficient dependent on the number of users, traffic volume, impact and more.
 
-Therefore, all calculations of availability are only rough estimates of the
-upper limit of availability.
+Therefore, all calculations of availabilities can only be rough estimates of
+their upper limits.
+
+Don't get afraid when you calculate days instead of minutes of downtime, here.
 
 But if we suppose, that a service provider is using the same safety coefficient
-in any of his publised SLA's, we are at least allowed to compare different kinds
+in any of his published SLA's, we are at least allowed to compare different kinds
 of services of the same provider.
+
+This is my goal here:
+
+   Finding the perfect configuration of services on AWS.
 
 ## Definitions
 
-We define Availability as the percentage of time in average, that a service is
+We define `availability` as the percentage of time in average that a service is
 in the functional state at an arbitrary point in time.
 
 The outage time span (per time span) (downtime) is now defined as:
   
-  Outage = (1-Availability) * (Time-Span)
+    Outage = (1-Availability) * (Time-Span)
 
-In calculations we need the Unavailability, that is defined as:
+In calculations we need the `unavailability` that is defined as:
 
-  Unavailability = 1-Availability
+    Unavailability = 1-Availability
 
 ## Modelling a compound system
 
 The theory of calculation compound system availabilities is based on the
-"propability therory" forming the concepts of:
+"probability theory" forming the concepts of:
 
 - [conditional dependence](https://en.wikipedia.org/wiki/Conditional_dependence) and
 - [conditional independence](https://en.wikipedia.org/wiki/Conditional_independence).
@@ -65,42 +76,41 @@ Therefore, we can model the availability of almost any compound system by a
 combination of dependent and independent systems. All numbers we need are the
 distinct availabilities of any incorporated system.
 
-For modeling the compound system it must be portrayed in a tree-like or better to
-say, layered structure.
-The entrypoint (or top level) is wether a collection (list) of dependent or
+For modelling the compound system it must be portrayed in a tree-like or
+better to say, layered structure.
+The entry point (or top level) is a collection (list) of dependent or
 independent systems.
 
 Any dependent or independent system of any layer can consist of another
 collection (list) of dependent or independent systems.
 
-But may never mix dependent and independent systems in one collection. You
+But never mix dependent and independent systems in one collection. You
 have to always split them into separate collections.
 
 So, how can we decide, what is dependent or not?
 
 ### The "chain"
 
-What is a "dependant system"? The most easiest example to explain a dependant
-system is a chain. If only one chain link cracks, the ship is on perish.
+What is a "dependent system"? An example for a dependent system is a ship’s anchor chain. If only one chain link cracks, the ship is on perish.
 The ship relies on every single chain link. On bad takes it all.
 
 If the average availability of a single chain link is 99.99%, the compound
 availability of a chain with 100 links is 99.99% powered by 100.
-That is 99%, or (quite oversimplified) one of a hundert times we use the chain,
-it will break. Let's disembark quickly from this ship.
+That is 99%, or (quite oversimplified) one of a hundred times we use the chain,
+it will break. Let's disembark quickly from that ship.
 
 The compound availability of dependent systems is been calculated by multiplying
 the particular system availability. Therefore the ordering of particular systems
 dependent on each other is of no importance.
 
-As we already know, exchanging two identical "bad" spare partes does nothing to
-the availability of our car. We have to spend money for exchanging them to
-better parts.
+As we already know, exchanging two identical "bad" spare parts (e.g. tyres)
+does nothing to the availability of our car. We have to spend money for
+exchanging them against better parts (e.g. new tyres).
 
-You may use calculation function `chain(...availablities)`, if you have a number
-of dependent systems with different availabilities.
+You may use the calculation function `chain(...availabilities)`, if you have a
+number of dependent systems with different availabilities.
 
-You may use calculation function `chaining(count, availablitiy)`, if you have
+You may use calculation function `chaining(count, availability)`, if you have
 a number of dependent systems with identical availabilities.
 
 ### The "parallel"
@@ -113,7 +123,7 @@ Example: If the ship uses two chains for its anchorage, and any chain can hold
 the ship in place for it alone, these chains are considered independent.
 
 You may use the calculation function `parallel(...availabilities)`, if you have
-a collection of independent systems with different availabilites.
+a collection of independent systems with different availabilities.
 
 You may use the calculation function `paralellism(count, availability)`, if you
 have a number of independent systems with identical availability.
@@ -155,10 +165,10 @@ There is an example prepared, execute `npx ts-node awsmodels.ts`
 
 ### Calculation functions
 
-chain(availabilitiy, ...)
+chain(availability, ...)
   Calculates the availability of a collection of dependent systems.
 
-chaining(number, availabiliie)
+chaining(number, availability)
   Calculates the availability of a series of identical dependent systems.
 
 parallel(availability, ...)
@@ -177,18 +187,18 @@ headline(text)
   Prints a headline box including a text line. Increases the section counter.
 
 showAvailability(descritpion, availability)
-  Prints an compound service model availability and shows the downtime (outage)
+  Prints a compound service model availability and shows the downtime (outage)
   as total time span in seconds and human readable. Increases the model counter.
 
 showComparison()
-  Prints a comparision barchart between the last compound service models of this
-  sections. Models for comparision are pushed through calls to `showAvailability()`.
+  Prints a comparison bar chart between the all service models of the section.
+  Models for comparison are pushed through calls to `showAvailability()`.
   A section is between two calls of `headline(...)`.
 
 showBesteverComparison()
   Prints a comparision barchart of all compound service models of all sections.
   Two comparison are shown:
-  First shows the top-5 of all models evaluated, indepedent of the section.
+  First shows the top-5 of all models evaluated, independent of the section.
   Second shows the top model of any section.
   This is usually the last call to this library.
 
@@ -218,15 +228,16 @@ showBesteverComparison()
     headline('Best-Ever-Comparision')
     showBestEverComparison()
 
-## Execution
+## Run your own service model
 
-No build step is required.
+No build step is required. The only dependency is the Typescript runtime
+layer in package `ts-node`.
 
 Start with the example set of models in file `awsmodels.ts`. Execute `npm run demo`.
 
-Create your models like shown in the exampole above. There is a template model file
-prepared in `models.ts`. Use this file for your compound service models. Execute:
+Create your models like shown in the example above. There is a template
+file in `models.ts`. Use this file for your compound service models. Run:
 
     npm run model
 
-Alternatively you can execute any model file with `npx ts-node <myfile.ts>`.
+Alternatively you can run any model file with `npx ts-node <myfile.ts>`.
