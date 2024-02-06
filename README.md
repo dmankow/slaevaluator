@@ -20,15 +20,36 @@ High availability systems might be specified as 99.9%, 99.999% or 99.9995%.
 In the following we use percent when we display an availability, but factors in the
 range of [0,1] when we calculate with them.
 
-Any added time span is without effect. Both systems have identical availabilities:
-99.5% / month and 99.5% per year.
+Any additionally stated time span is without effect. Both systems have identical availabilities: 99.5%/month and 99.5%/year.
 
-For a comparision of availabilities the it is sometimes more practical to compare the
-resulting outage time span. Outage is defined as:
+## How we can use it
+
+For a comparision of availabilities it is sometimes more practical to compare the
+resulting outage time span. We use "outage" instead of "downtime", because there is
+in most circumstances no relation to any realistic downtime of a system.
+
+This is, because Availabilities stated in any SLA are usually compromised by some
+considerations of business risks of the service provider, as well as marketing.
+A reputable service provider will state any Availabilities including a safety
+coefficient dependant on the number of users (volume), impact and more.
+
+Therefore, all calculations of availability are only rough estimates of the
+upper limit of availability.
+
+But if we suppose, that a service provider is using the same safety coefficient
+in any of his publised SLA's, we are at least allowed to compare different kinds
+of services of the same provider.
+
+## Definitions
+
+We define Availability as the percentage of time in average, that a service is
+in the functional state at an arbitrary point in time.
+
+The outage time span (per time span) (downtime) is now defined as:
   
   Outage = (1-Availability) * (Time-Span)
 
-We define as well the term of Unavailability:
+In calculations we need the Unavailability, that is defined as:
 
   Unavailability = 1-Availability
 

@@ -13,7 +13,7 @@ import {
 
 const DEBUG = false;
 
-headline("Singletons");
+// Tests
 
 assertNumber(0.9985, 4, chain(0.999, 0.9995));
 assertNumber(chain(0.9993, 0.9993, 0.9993), 4, chaining(3, 0.9993));
@@ -22,7 +22,9 @@ assertNumber(0.9994, 4, chain(0.9995, 0.9999));
 assertNumber(0.99999964, 8, parallel(0.9994, 0.9994));
 assertNumber(0.99999964, 8, parallelism(2, 0.9994));
 
-// Note: Outage is calculated with average length of year (365.2425 days)
+headline("Singletons");
+
+// Note: Outage is calculated with average length of a year (365.2425 days)
 if (DEBUG) {
     showAvailability('99.5%', 0.995);
     showAvailability('99.9%', 0.999);
